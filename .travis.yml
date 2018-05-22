@@ -13,7 +13,7 @@ install:
   - go get github.com/mattn/goveralls
 
 before_script:
-  - diff -u <(echo -n) <(gofmt -d -s .)
+  - diff -u <(echo -n) <(gofmt -d -s *.go)
   - go tool vet .
 
 script:
