@@ -1,0 +1,18 @@
+language: go
+
+go:
+  - "1.10"
+  - master
+
+before_install:
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+  - dep ensure
+
+
+before_script:
+  - diff -u <(echo -n) <(gofmt -d -s .)
+  - go tool vet .
+
+script:
+  - go build .
+  - go test .
