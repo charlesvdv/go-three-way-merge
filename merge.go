@@ -1,4 +1,4 @@
-// Package go_three_way_merge implements an intuitive three way merge
+// Package go_three_way_merge implements an intuitive three way merging
 // algorithm. See https://en.wikipedia.org/wiki/Merge_(version_control)#Three-way_merge
 // for more detail.
 package go_three_way_merge
@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	inconsistencyErr error = errors.New("Inconsistency error")
+	errInconsistency = errors.New("Inconsistency error")
 )
 
 // Merge two versions of the same base file. Returns the resulting merged
@@ -29,7 +29,8 @@ func Merge(base, versionA, versionB string) (string, bool, error) {
 	return result, ok, err
 }
 
-// Same as `Merge` with runes instead.
+// MergeRunes provides the same functionality as `Merge` with
+// runes instead of string.
 func MergeRunes(base, versionA, versionB []rune) (string, bool, error) {
 	dmp := diffmatchpatch.New()
 
@@ -54,7 +55,7 @@ func MergeRunes(base, versionA, versionB []rune) (string, bool, error) {
 
 			// TODO: verify this is always correct.
 			if nonFinished.diffType() != diffInsert {
-				return result.String(), false, errors.New("Unexpected diff.")
+				return result.String(), false, errors.New("Unexpected diff")
 			}
 			result.WriteRune(nonFinished.valueRune())
 			nonFinished.next()
@@ -67,11 +68,11 @@ func MergeRunes(base, versionA, versionB []rune) (string, bool, error) {
 
 		if aType == diffEqual && bType == diffEqual {
 			if aValue != baseValue || bValue != baseValue {
-				return result.String(), false, inconsistencyErr
+				return result.String(), false, errInconsistency
 			}
 			diffIteratorA.next()
 			diffIteratorB.next()
-			offsetBase += 1
+			offsetBase++
 
 			result.WriteRune(baseValue)
 		} else if aType != diffEqual && bType != diffEqual {
@@ -85,7 +86,7 @@ func MergeRunes(base, versionA, versionB []rune) (string, bool, error) {
 				if aType == diffInsert {
 					result.WriteRune(aValue)
 				} else if aType == diffDelete {
-					offsetBase += 1
+					offsetBase++
 				}
 			} else {
 				// A merge-conflict has been found.
@@ -93,11 +94,11 @@ func MergeRunes(base, versionA, versionB []rune) (string, bool, error) {
 			}
 		} else if aType == diffDelete || bType == diffDelete {
 			if aValue != baseValue || bValue != baseValue {
-				return result.String(), false, inconsistencyErr
+				return result.String(), false, errInconsistency
 			}
 			diffIteratorA.next()
 			diffIteratorB.next()
-			offsetBase += 1
+			offsetBase++
 		} else if aType == diffInsert || bType == diffInsert {
 			var insertIterator *diffIterator
 			if aType == diffInsert {

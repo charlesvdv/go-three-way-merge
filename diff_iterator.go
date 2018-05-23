@@ -26,11 +26,11 @@ func newDiffIterator(diffs []diffmatchpatch.Diff) diffIterator {
 }
 
 func (i *diffIterator) next() {
-	i.runeOffset += 1
+	i.runeOffset++
 
 	if i.runeOffset == len(i.currentRunes) {
 		i.runeOffset = 0
-		i.diffOffset += 1
+		i.diffOffset++
 		if i.diffOffset < len(i.diffs) {
 			i.currentRunes = []rune(i.diffs[i.diffOffset].Text)
 		}
